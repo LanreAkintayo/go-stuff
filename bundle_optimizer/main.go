@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type DataPlan struct {
 	id string
 	size int
@@ -7,26 +9,25 @@ type DataPlan struct {
 }
 
 
-func OptimizeDataPlans(dataPlans []DataPlan) map[string]DataPlan {
-	optimized := make(map[string]DataPlan)
+func OptimizeDataPlans(dataPlans []DataPlan) map[int]DataPlan {
+	optimized := make(map[int]DataPlan)
 
-	for i := 0; i < len(dataPlans); i++ {
-		currentPlan := dataPlans[i]
-		existingDataPlan, exists := optimized[currentPlan.id]
+	for _, currentPlan := range dataPlans {
+		existingDataPlan, exists := optimized[currentPlan.size]
 
 		if exists {
 			// Compare and retain the one that has the higher price
 			if currentPlan.price > existingDataPlan.price {
-				optimized[currentPlan.id] = currentPlan
+				optimized[currentPlan.size] = currentPlan
 			}
 		} else {
-			optimized[currentPlan.id] = currentPlan
+			optimized[currentPlan.size] = currentPlan
 		}
 	}
 
 	return optimized
 }
-
+   
 func main(){
 	// Get a list of data plans
 	dataPlans := []DataPlan {
@@ -39,7 +40,5 @@ func main(){
 
 	optimizedDataPlans  := OptimizeDataPlans(dataPlans)
 
-	fmt.Println(optimizedDataPlans[])
-
-
+	fmt.Println(optimizedDataPlans)
 }
