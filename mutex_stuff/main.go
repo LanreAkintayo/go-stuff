@@ -2,6 +2,7 @@ package main
 
 
 func main(){
-	SecureCounter()
+	// SecureCounter()
+	HighTraffic()
 	// Timer()
 }
