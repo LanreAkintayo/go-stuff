@@ -1,3 +1,22 @@
+/*
+Challenge 2: The High-Traffic Naira Wallet (Medium / RWMutex)
+Scenario: A fintech wallet where users check balances frequently but update them rarely.
+
+Your Task: Use sync.RWMutex. Implement GetBalance() (read-lock) and ModifyBalance() (write-lock). Add a rule: withdrawals must fail if the balance goes below zero.
+
+Goal: Understand the "Read vs. Write" performance optimization.
+
+
+Since this is a high-traffic system, your input is a mixed workload of many "Readers" and a few "Writers" hitting your wallet service simultaneously.
+
+The "Readers": Imagine 900 goroutines that are just checking the wallet balance to see if they have enough money for a transaction.
+
+The "Writers": Imagine 100 goroutines that are performing actual financial transactions (either adding money via deposits or taking money out via withdrawals).
+
+You would simulate this in your main() function by firing off these 1,000 requests as concurrent goroutines. Some will try to read, some will try to deposit (positive numbers), and some will try to withdraw (negative numbers).
+*/
+
+
 package main
 
 import (
