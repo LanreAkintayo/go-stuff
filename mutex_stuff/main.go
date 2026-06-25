@@ -4,6 +4,6 @@ package main
 func main(){
 	// SecureCounter()
 	// HighTraffic()
-	Challenge3()
-	// Timer()
+	// Challenge3()
+	Challenge4()
 }
