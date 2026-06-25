@@ -16,7 +16,6 @@ The "Writers": Imagine 100 goroutines that are performing actual financial trans
 You would simulate this in your main() function by firing off these 1,000 requests as concurrent goroutines. Some will try to read, some will try to deposit (positive numbers), and some will try to withdraw (negative numbers).
 */
 
-
 package main
 
 import (
@@ -110,5 +109,5 @@ func HighTraffic() {
 
 	routineTracker.Wait()
 	close(collectorChan)
-	<- doneChan
+	<-doneChan
 }
