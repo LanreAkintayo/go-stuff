@@ -176,7 +176,7 @@ func ConcurrentDownloader(urls []string, destDir string, maxConcurrent int) erro
 			errors = append(errors, result.Error)
 		} else {
 			totalSize += result.Size
-			fmt.Printf("Downloded %s (%d bytes) in %s\n", result.Filename, result.Size, result.Duration.Seconds())
+			fmt.Printf("Downloded %s (%d bytes) in %s\n", result.Filename, result.Size, result.Duration)
 		}
 	}
 
