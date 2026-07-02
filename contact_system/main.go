@@ -26,12 +26,11 @@ func addContact(name, email, phone string) {
 		return
 	}
 	contact := Contact{
-		ID: nextID,
-		Name: name,
+		ID:    nextID,
+		Name:  name,
 		Email: email,
 		Phone: phone,
 	}
-
 
 	contactList = append(contactList, contact)
 	contactIndexByName[name] = contact.ID
@@ -40,7 +39,7 @@ func addContact(name, email, phone string) {
 	fmt.Printf("contact added: %+v\n", contact)
 }
 
-func findContact(name string) *Contact{
+func findContact(name string) *Contact {
 	// Check even if name exists in the first place.
 	contactIndex, exist := contactIndexByName[name]
 	if !exist {
@@ -56,22 +55,22 @@ func listContacts() {
 		return
 	}
 
-	for _, contact := range contactList{
+	for _, contact := range contactList {
 		fmt.Printf("ID: %d, Name: %s, Email: %s, Phone: %s\n", contact.ID, contact.Name, contact.Email, contact.Phone)
 	}
 }
-
-
 
 func main() {
 	addContact("John", "abc@gmail.com", "123456789")
 	addContact("Kunle", "def@gmail.com", "987654321")
 	addContact("Wale", "fgh@gmail.com", "443456789")
-	
+
 	listContacts()
 	contact := findContact("Kunle")
-	
 
-	fmt.Println("Contact pointer:", contact.Name)
-
+	if contact == nil {
+		fmt.Println("Contact not found")
+	} else {
+		fmt.Println("Contact pointer:", contact.Name)
+	}
 }

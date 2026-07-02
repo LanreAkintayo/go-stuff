@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func createMatrix(rows int, columns int) [][]int {
 	bigArray := make([][]int, rows)
@@ -32,4 +34,7 @@ func main() {
 	matrix := createMatrix(rows, columns)
 
 	printMatrix(matrix)
+
+
+	
 }
