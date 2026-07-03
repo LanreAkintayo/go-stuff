@@ -11,7 +11,7 @@ Simulate a transaction where money needs to be transferred between them concurre
 
 Deliberately construct the key acquisition sequence so that your program freezes completely (deadlocks) when run.
 
-Then, show me the fixed version and explain the design pattern you used to break the circle.
+Then, show  the fixed version and explain the design pattern you used to break the circle.
 */
 
 package main
