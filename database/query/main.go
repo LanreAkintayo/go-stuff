@@ -2,8 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
+	"time"
+
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,6 +19,14 @@ CREATE TABLE IF NOT EXISTS users (
     hashed_password TEXT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 )`
+
+type User struct {
+	ID             int       `json:"id"`
+	Name           string    `json:"name"`
+	Email          string    `json:"email"`
+	HashedPassword string    `json:"-"`
+	CreatedAt      time.Time `json:"created_at"`
+}
 
 func main() {
 	dbName := "users.db"
@@ -38,16 +49,32 @@ func main() {
 	}
 	fmt.Println("Database connection established successfully")
 
-	fmt.Println("Creating database schema...")
-	createTable(db)
-	fmt.Println("Table has been created")
 
-	lastId, err := createUser(db, "Lanre", "lanre@gmail.com", "password")
+	users, err := GetUsers(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Last user id is, ", lastId)
+	// Marshal into json
+
+	bytes, err := json.MarshalIndent(users, "", " ")
+	if err != nil {
+		log.Fatal("failed to marshal users: ", err)
+	}
+
+	
+	fmt.Println(string(bytes))
+
+	// fmt.Println("Creating database schema...")
+	// createTable(db)
+	// fmt.Println("Table has been created")
+
+	// lastId, err := createUser(db, "a", "a@gmail.com", "password")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// fmt.Println("Last user id is, ", lastId)
 }
 
 func createTable(db *sql.DB) {
@@ -76,4 +103,44 @@ func createUser(db *sql.DB, name, email, plainPassword string) (int64, error) {
 	}
 
 	return lastID, nil
+}
+
+func GetUserByEmail(db *sql.DB, email string) (*User, error) {
+	query := `SELECT id, name, email, hashed_password, created_at FROM users WHERE email = ?`
+
+	row := db.QueryRow(query, email)
+
+	var user User
+	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.HashedPassword, &user.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func GetUsers(db *sql.DB) ([]User, error) {
+	query := `SELECT id, name, email, hashed_password, created_at FROM users`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.HashedPassword, &user.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
