@@ -1,6 +1,6 @@
 package main
 
-import "fmt"
+// import "fmt"
 import "net/http"
 
 var htmlContent = `
@@ -22,18 +22,17 @@ func (app *application) login(w http.ResponseWriter, r *http.Request) {
 	app.render(w, "login.html", nil)
 }
 func (app *application) register(w http.ResponseWriter, r *http.Request) {
-	app.infoLog.Printf("%s %s", r.Method, r.URL.Path)
 	app.render(w, "register.html", nil)
 }
 
 func (app *application) about(w http.ResponseWriter, r *http.Request) {
-	app.infoLog.Printf("%s %s", r.Method, r.URL.Path)
-	aboutContent := fmt.Sprintf(htmlContent, "About", "<h1>this is the about page</h1>")
-	w.Write([]byte(aboutContent))
+	app.render(w, "about.html", nil)
 }
 
 func (app *application) contact(w http.ResponseWriter, r *http.Request) {
-	app.infoLog.Printf("%s %s", r.Method, r.URL.Path)
-	contactContent := fmt.Sprintf(htmlContent, "Contact", "<h1>this is the contact page</h1>")
-	w.Write([]byte(contactContent))
+	app.render(w, "contact.html", nil)
+}
+func (app *application) submit(w http.ResponseWriter, r *http.Request) {
+		app.render(w, "submit.html", nil)
+
 }
