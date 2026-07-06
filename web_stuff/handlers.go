@@ -14,9 +14,16 @@ var htmlContent = `
 `
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
+	app.infoLog.Printf("Session data: %v", app.session.Get(r, "userID"))
+	app.render(w, "index.html", nil)
+}
+func (app *application) login(w http.ResponseWriter, r *http.Request) {
+	app.session.Put(r, "userID", "Lanre")
+	app.render(w, "login.html", nil)
+}
+func (app *application) register(w http.ResponseWriter, r *http.Request) {
 	app.infoLog.Printf("%s %s", r.Method, r.URL.Path)
-	homeContent := fmt.Sprintf(htmlContent, "Home", "<h1>this is the home page</h1>")
-	w.Write([]byte(homeContent))
+	app.render(w, "register.html", nil)
 }
 
 func (app *application) about(w http.ResponseWriter, r *http.Request) {
