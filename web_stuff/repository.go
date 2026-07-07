@@ -3,14 +3,17 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
+var ErrInvalidCredentials = errors.New("invalid credentials")
 
 type UserRepository interface {
-	CreateUser(name, email, hashedPassword, avatar string) (int64, error)
+	CreateUser(name, email, plainPassword, avatar string) (int, error)
 	GetUserByEmail(email string) (*User, error)
-	GetUsers() ([]User, error) 
+	GetUsers() ([]User, error)
+	Authenticate(email, password string) (int, error)
 }
 
 type SQLUserRepository struct {
@@ -21,8 +24,7 @@ func NewSQLUserRepository(db *sql.DB) UserRepository {
 	return &SQLUserRepository{db: db}
 }
 
-
-func (r *SQLUserRepository) CreateUser(name, email, hashedPassword, avatar string) (int64, error) {
+func (r *SQLUserRepository) CreateUser(name, email, plainPassword, avatar string) (int, error) {
 	ctx := context.Background()
 
 	tx, err := r.db.BeginTx(ctx, nil)
@@ -38,7 +40,7 @@ func (r *SQLUserRepository) CreateUser(name, email, hashedPassword, avatar strin
 	}
 	defer stmt.Close()
 
-	hp, err := bcrypt.GenerateFromPassword([]byte(hashedPassword), bcrypt.DefaultCost)
+	hp, err := bcrypt.GenerateFromPassword([]byte(plainPassword), bcrypt.DefaultCost)
 	if err != nil {
 		return 0, err
 	}
@@ -53,7 +55,7 @@ func (r *SQLUserRepository) CreateUser(name, email, hashedPassword, avatar strin
 		return 0, err
 	}
 
-	profileStm, err := tx.PrepareContext(ctx, `INSERT INTO profiles (user_id, avatar) VALUES( ?, ?)`)
+	profileStm, err := tx.PrepareContext(ctx, `INSERT INTO profile (user_id, avatar) VALUES( ?, ?)`)
 	if err != nil {
 		return 0, err
 	}
@@ -67,7 +69,7 @@ func (r *SQLUserRepository) CreateUser(name, email, hashedPassword, avatar strin
 	if err != nil {
 		return 0, err
 	}
-	return userID, nil	
+	return int(userID), nil
 }
 
 func (r *SQLUserRepository) GetUserByEmail(email string) (*User, error) {
@@ -82,6 +84,24 @@ func (r *SQLUserRepository) GetUserByEmail(email string) (*User, error) {
 	}
 	user.Profile.UserID = user.ID
 	return &user, nil
+}
+
+func (r *SQLUserRepository) Authenticate(email, password string) (int, error) {
+	user, err := r.GetUserByEmail(email)
+	if err != nil {
+		return 0, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password))
+	if err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return 0, ErrInvalidCredentials
+		}
+
+		return 0, err
+	}
+
+	return user.ID, nil
 }
 
 func (r *SQLUserRepository) GetUsers() ([]User, error) {
@@ -110,7 +130,3 @@ func (r *SQLUserRepository) GetUsers() ([]User, error) {
 
 	return users, nil
 }
-
-
-	
-

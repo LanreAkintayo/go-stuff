@@ -3,22 +3,31 @@
   <div class="auth-form">
     <h2>Login</h2>
 
-    {{if .Error}}
+    {{with .Form}}
+    {{with .Errors.Get "generic"}}
     <div class="error-message">
-      {{.Error}}
+      {{.}}
     </div>
     {{end}}
+
 
     <form action="/login" method="post" autocomplete="off">
       <div class="form-group">
         <label for="email">Email address:</label>
-        <input type="text" id="email" name="email" value="" required>
+        <input type="text" id="email" name="email" value="{{.Get " email"}}" required>
+        {{with .Errors.Get "email"}}
+        <div class="error-message">{{.}}</div>
+        {{end}}
       </div>
 
       <div class="form-group">
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" value="" required>
+        {{with .Errors.Get "password"}}
+        <div class="error-message">{{.}}</div>
+        {{end}}
       </div>
+      {{end}}
 
       <button type="submit" class="btn-primary">Login</button>
     </form>

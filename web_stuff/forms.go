@@ -8,15 +8,15 @@ import (
 )
 
 
-type errors map[string][]string
+type formErrors map[string][]string
 
 var EmailRX = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
-func (e errors) Add(field, message string) {
+func (e formErrors) Add(field, message string) {
 	e[field] = append(e[field], message)
 }
 
-func (e errors) Get(field string) string {
+func (e formErrors) Get(field string) string {
 	if err, ok := e[field]; ok {
 		return err[0]
 	}
@@ -25,14 +25,14 @@ func (e errors) Get(field string) string {
 
 type Form struct {
 	url.Values
-	Errors errors
+	Errors formErrors
 }
 
 
 func NewForm(data url.Values) *Form {
 	return &Form{
 		Values: data,
-		Errors: make(errors),
+		Errors: make(formErrors),
 	}
 }
 

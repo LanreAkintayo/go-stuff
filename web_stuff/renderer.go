@@ -16,6 +16,12 @@ type TemplateRenderer struct {
 	templateDir string
 }
 
+type templateData struct {
+	Form            *Form
+	isAuthenticated bool
+	Flash           string
+}
+
 func NewTemplateRenderer(templateDir string, isDev bool) *TemplateRenderer {
 	return &TemplateRenderer{
 		cache:       make(map[string]*template.Template),
@@ -72,8 +78,8 @@ func (t *TemplateRenderer) getTemplate(templateName string) (*template.Template,
 }
 
 func (t *TemplateRenderer) parseTemplate(templateName string) (*template.Template, error) {
-	templatePath := path.Join(t.templateDir, templateName)	
-	
+	templatePath := path.Join(t.templateDir, templateName)
+
 	files := []string{templatePath}
 
 	layoutPath := path.Join(t.templateDir, "layouts/*.html")
@@ -89,7 +95,7 @@ func (t *TemplateRenderer) parseTemplate(templateName string) (*template.Templat
 	}
 
 	tmpl, err := template.ParseFiles(files...)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	return tmpl, nil
