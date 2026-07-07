@@ -45,7 +45,7 @@ func main() {
 		publicPath:  "./web_stuff/public",
 		session:     session,
 	}
-	app.tp = NewTemplateRenderer(app.templateDir, false)
+	app.tp = NewTemplateRenderer(app.templateDir, true)
 
 	fmt.Println("Starting server on :8080")
 	err = app.serve()
