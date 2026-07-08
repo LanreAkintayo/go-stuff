@@ -14,18 +14,12 @@
     <form action="/login" method="post" autocomplete="off">
       <div class="form-group">
         <label for="email">Email address:</label>
-        <input type="text" id="email" name="email" value="{{.Get " email"}}" required>
-        {{with .Errors.Get "email"}}
-        <div class="error-message">{{.}}</div>
-        {{end}}
+        <input type="text" id="email" name="email" value="{{.Get "email"}}" required>
       </div>
 
       <div class="form-group">
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" value="" required>
-        {{with .Errors.Get "password"}}
-        <div class="error-message">{{.}}</div>
-        {{end}}
       </div>
       {{end}}
 

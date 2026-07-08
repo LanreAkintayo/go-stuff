@@ -1,8 +1,11 @@
 {{define "content"}}
 <div class="container">
 
-
   <div class="posts-list">
+    <p>No posts yet. Be the first to submit one!</p>
+  </div>
+
+  {{/* TODO: Re-enable once Posts field is added to templateData
     {{with .Posts}}
     {{range .}}
     <div class="post-item">
@@ -10,7 +13,6 @@
         <div class="post-title">
           <a href="{{.URL}}" class="post-link" target="_blank">{{.Title}}</a>
           <span class="post-domain">{{.Host}}</span>
-
           <a href="#" class="post-link">{{.UserName}}</a>
         </div>
         <div class="post-meta">
@@ -21,22 +23,10 @@
       </div>
     </div>
     {{end}}
-
+    {{else}}
+    <p>No posts yet. Be the first to submit one!</p>
     {{end}}
-  </div>
-
-
-  <!-- {{if gt .Metadata.TotalRecords .Metadata.PageSize}}
-  <div class="pagination">
-    {{if gt .Metadata.PrevPage 0}}
-    <a href="{{.PrevLink}}" class="more-link">Prev</a>
-    {{end}}
-
-    {{if gt .Metadata.NextPage 0}}
-    <a href="{{.NextLink}}" class="more-link">Next</a>
-    {{end}}
-  </div>
-  {{end}} -->
+  */}}
 
 </div>
 {{end}}

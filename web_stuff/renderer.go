@@ -18,7 +18,7 @@ type TemplateRenderer struct {
 
 type templateData struct {
 	Form            *Form
-	isAuthenticated bool
+	IsAuthenticated bool
 	Flash           string
 }
 

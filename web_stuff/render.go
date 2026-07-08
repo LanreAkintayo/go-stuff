@@ -21,6 +21,8 @@ func (app *application) defaultTemplateData(data *templateData, r *http.Request)
 	}
 
 	data.Flash = app.session.PopString(r, "flash")
+	data.IsAuthenticated = app.isAuthenticated(r)
+	
 
 	return data
 
