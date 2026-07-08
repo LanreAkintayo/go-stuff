@@ -15,24 +15,42 @@
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" value="{{.Get "name"}}" required>
-
+                {{with .Errors.Get "name"}}
+                <div class="inline-error">
+                    {{.}}
+                </div>
+                {{end}}
             </div>
             <div class="form-group">
                 <label for="email">Email address:</label>
                 <input type="text" id="email" name="email" value="{{.Get "email"}}" required>
+                {{with .Errors.Get "email"}}
+                <div class="inline-error">
+                    {{.}}
+                </div>
+                {{end}}
 
             </div>
 
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" value="" required>
+                {{with .Errors.Get "password"}}
+                <div class="inline-error">
+                    {{.}}
+                </div>
+                {{end}}
 
             </div>
 
             <div class="form-group">
                 <label for="avatar">Avatar:</label>
                 <input type="text" id="avatar" name="avatar" value="{{.Get "avatar"}}">
-
+                {{with .Errors.Get "avatar"}}
+                <div class="inline-error">
+                    {{.}}
+                </div>
+                {{end}}
             </div>
             {{end}}
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/url"
 	"regexp"
 	"strings"
@@ -40,7 +41,7 @@ func (f *Form) Required(fields ...string) *Form{
 	for _, field := range fields {
 		value := f.Get(field)
 		if strings.TrimSpace(value) == "" {
-			f.Errors.Add(field, "This field cannot be blank")
+			f.Errors.Add(field, fmt.Sprintf("This field %s cannot be blank", field))
 		}
 	}
 
@@ -57,7 +58,7 @@ func (f *Form) MaxLength(field string, count int) *Form {
 		return f
 	}
 	if utf8.RuneCountInString(value) > count {
-		f.Errors.Add(field, "This field is too long")
+		f.Errors.Add(field, fmt.Sprintf("This field %s is too long (maximum of %d characters)", field, count))
 	}
 
 	return f
@@ -69,7 +70,7 @@ func (f *Form) MinLength(field string, count int) *Form {
 		return f
 	}
 	if utf8.RuneCountInString(value) < count {
-		f.Errors.Add(field, "This field is too short")
+		f.Errors.Add(field, fmt.Sprintf("This field %s is too short (minimum of %d characters)", field, count))
 	}
 
 	return f
@@ -84,5 +85,17 @@ func (f *Form) Matches(field string, pattern *regexp.Regexp) *Form {
 		f.Errors.Add(field, "This field does not match the pattern")
 	}
 
+	return f
+}
+
+func (f *Form) IsEmail(field string) *Form {
+	value := f.Get(field)
+	if value == ""{
+		return f
+	}
+
+	if !EmailRX.MatchString(value){
+		f.Errors.Add(field, "Please enter a valid email address")
+	}
 	return f
 }

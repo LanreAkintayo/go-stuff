@@ -41,7 +41,7 @@ func (app *application) login(w http.ResponseWriter, r *http.Request) {
 			MaxLength("password", 100).
 			MinLength("password", 6).
 			MinLength("email", 3).
-			Matches("email", EmailRX)
+			IsEmail("email")
 
 		if !form.Valid() {
 			form.Errors.Add("generic", "The data you submitted is not valid")
@@ -104,7 +104,7 @@ func (app *application) register(w http.ResponseWriter, r *http.Request) {
 			MaxLength("email", 100).
 			MinLength("password", 6).
 			MinLength("email", 3).
-			Matches("email", EmailRX)
+			IsEmail("email")
 		if !form.Valid() {
 			form.Errors.Add("generic", "The data you submitted is not valid")
 			app.errorLog.Printf("Invalid form: %+v", form.Errors)
