@@ -63,7 +63,7 @@ type Metadata struct {
 	PageSize     int `json:"page_size"`     // How many items are on this page
 	FirstPage    int `json:"first_page"`    // Always 1, used for the "Go to First" button
 	NextPage     int `json:"next_page"`     // The page number for the "Next" button
-	Prevpage     int `json:"prev_page"`     // The page number for the "Prev" button
+	PrevPage     int `json:"prev_page"`     // The page number for the "Prev" button
 	LastPage     int `json:"last_page"`     // The total number of pages available
 	TotalRecords int `json:"total_records"` // The absolute total number of posts in the DB matching the query
 }
@@ -82,9 +82,9 @@ func calculateMetadata(totalRecords, page, pageSize int) Metadata {
 	}
 
 	if meta.CurrentPage > 1 {
-		meta.Prevpage = meta.CurrentPage - 1
+		meta.PrevPage = meta.CurrentPage - 1
 	} else {
-		meta.Prevpage = 0
+		meta.PrevPage = 0
 	}
 	if meta.CurrentPage < meta.LastPage {
 		meta.NextPage = meta.CurrentPage + 1

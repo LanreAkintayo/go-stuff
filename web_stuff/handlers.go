@@ -2,6 +2,7 @@ package main
 
 // import "fmt"
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -226,4 +227,31 @@ func (app *application) submit(w http.ResponseWriter, r *http.Request) {
 	}
 	app.render(w, r, "submit.html", &templateData{Form: NewForm(r.PostForm)})
 
+}
+
+func (app *application) vote(w http.ResponseWriter, r *http.Request) {
+	/*
+			type Vote struct {
+			UserID    int       `json:"user_id"`
+			PostID    int       `json:"post_id"`
+			CreatedAt time.Time `json:"created_at"`
+		}
+	*/
+
+	postId := app.readIntWithDefault(r, "post_id", 0)
+	user := app.getUserFromContext(r.Context())
+
+	err := app.postRepo.AddVote(user.ID, postId)
+	if err != nil {
+		app.errorLog.Printf("Error voting: %v", err.Error())
+		app.session.Put(r, "flash", fmt.Sprintf("You may have already voted for post %d", postId))
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	app.infoLog.Printf("Vote added successfully for %d", postId)
+
+	app.session.Put(r, "flash", fmt.Sprintf("Vote added successfully for post %d", postId))
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
