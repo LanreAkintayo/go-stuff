@@ -1,7 +1,10 @@
 package main
 
 // import "fmt"
-import "net/http"
+import (
+	"net/http"
+	"strconv"
+)
 
 var htmlContent = `
 	<!DOCTYPE html>
@@ -17,9 +20,34 @@ const (
 	loggedInUserKey = "logged_in_user"
 )
 
+func (app *application) readIntWithDefault(r *http.Request, key string, def int) int {
+	value, err := strconv.Atoi(r.URL.Query().Get(key))
+	if err != nil {
+		return def
+	}
+	return value
+}
+
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	// app.infoLog.Printf("Session data: %v", app.session.Get(r, "userID"))
-	app.render(w, r, "index.html", nil)
+	filter := Filter{
+		Page:     app.readIntWithDefault(r, "page", 1),
+		PageSize: app.readIntWithDefault(r, "page_size", 10),
+		Query:    r.URL.Query().Get("query"),
+		OrderBy:  r.URL.Query().Get("order_by"),
+	}
+
+	posts, metadata, err := app.postRepo.GetAll(filter)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	data := templateData{
+		Posts:    posts,
+		Metadata: metadata,
+	}
+
+	app.render(w, r, "index.html", &data)
 }
 
 func (app *application) login(w http.ResponseWriter, r *http.Request) {
@@ -154,7 +182,7 @@ func (app *application) submit(w http.ResponseWriter, r *http.Request) {
 			- If it is successful, then somehow activate the flash message
 			- I think that's all
 		- render the submit form and just parse the form stuff.
-	*/   
+	*/
 
 	if r.Method == http.MethodPost {
 		if err := r.ParseForm(); err != nil {
