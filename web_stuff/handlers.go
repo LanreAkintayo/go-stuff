@@ -144,6 +144,58 @@ func (app *application) contact(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, "contact.html", nil)
 }
 func (app *application) submit(w http.ResponseWriter, r *http.Request) {
-	app.render(w, r, "submit.html", nil)
+	/*
+		What I want to try and achieve in this function
+		- If we are coming from post method
+			- I want to parse the form
+			- Wrap it in our own form
+			- Extract the values from the form
+			- Create a post with those values
+			- If it is successful, then somehow activate the flash message
+			- I think that's all
+		- render the submit form and just parse the form stuff.
+	*/   
+
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return
+		}
+
+		form := NewForm(r.PostForm)
+
+		form.Required("url", "title").
+			MinLength("title", 5).
+			MaxLength("url", 2048).
+			MaxLength("title", 255)
+
+		if !form.Valid() {
+			form.Errors.Add("generic", "The data you submitted is not valid")
+			app.errorLog.Printf("Invalid form: %+v", form.Errors)
+			app.render(w, r, "submit.html", &templateData{Form: form})
+			return
+		}
+
+		title := r.FormValue("title")
+		url := r.FormValue("url")
+		user := app.getUserFromContext(r.Context())
+
+		_, err := app.postRepo.CreatePost(title, url, user.ID)
+		if err != nil {
+			app.errorLog.Printf("Error creating post: %v", err.Error())
+			form.Errors.Add("generic", "Failed to create post")
+			app.render(w, r, "submit.html", &templateData{Form: form})
+			return
+		}
+
+		app.infoLog.Println("Post created successfully")
+
+		app.session.Put(r, "flash", "Post created successfully")
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+	app.render(w, r, "submit.html", &templateData{Form: NewForm(r.PostForm)})
 
 }

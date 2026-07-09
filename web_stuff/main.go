@@ -16,10 +16,11 @@ type application struct {
 	errorLog    *log.Logger
 	infoLog     *log.Logger
 	userRepo    UserRepository
+	postRepo    PostRepository
 	templateDir string
 	publicPath  string
 	tp          *TemplateRenderer
-	session    *sessions.Session
+	session     *sessions.Session
 }
 
 func main() {
@@ -35,12 +36,12 @@ func main() {
 	session.Lifetime = 24 * time.Hour
 	session.Secure = true
 	session.SameSite = http.SameSiteLaxMode
-	
 
 	app := &application{
 		errorLog:    log.New(os.Stderr, "ERROR\t", log.Ltime|log.LstdFlags|log.Lmicroseconds|log.Lshortfile),
 		infoLog:     log.New(os.Stdout, "INFO\t", log.Ltime|log.LstdFlags),
 		userRepo:    NewSQLUserRepository(db),
+		postRepo:    NewSQLPostRepository(db),
 		templateDir: "./web_stuff/templates",
 		publicPath:  "./web_stuff/public",
 		session:     session,
@@ -52,6 +53,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 }
 
 func connectToDatabase(dbName string) (*sql.DB, error) {

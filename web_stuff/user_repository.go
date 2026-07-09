@@ -34,6 +34,7 @@ func (r *SQLUserRepository) CreateUser(name, email, plainPassword, avatar string
 
 	defer tx.Rollback()
 
+	// 
 	stmt, err := tx.PrepareContext(ctx, `INSERT INTO users (name, email, hashed_password) VALUES (?, ?, ?)`)
 	if err != nil {
 		return 0, err
