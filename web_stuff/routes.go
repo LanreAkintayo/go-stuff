@@ -21,6 +21,7 @@ func (app *application) routes() http.Handler {
 	mux.Handle("/register", secureMiddleware.ThenFunc(app.register))
 	mux.Handle("/submit", secureMiddleware.Append(app.requireAuth).ThenFunc(app.submit))
 	mux.Handle("/vote", secureMiddleware.Append(app.requireAuth).ThenFunc(app.vote))
+	mux.Handle("/comments", secureMiddleware.Append(app.requireAuth).ThenFunc(app.comments))
 
 	handler := defaultMiddleware.Then(mux)
 

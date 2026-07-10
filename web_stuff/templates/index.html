@@ -1,6 +1,7 @@
 {{define "content"}}
 <div class="container">
 
+  {{template "filter-form.html" .}}
 
   <div class="posts-list">
     {{with .Posts}}
@@ -29,11 +30,11 @@
   {{if gt .Metadata.TotalRecords .Metadata.PageSize}}
   <div class="pagination">
     {{if gt .Metadata.PrevPage 0}}
-    <a href="?page={{.Metadata.PrevPage}}&page_size={{.Metadata.PageSize}}" class="more-link">Prev</a>
+    <a href="{{.PrevLink}}" class="more-link">Prev</a>
     {{end}}
 
     {{if gt .Metadata.NextPage 0}}
-    <a href="?page={{.Metadata.NextPage}}&page_size={{.Metadata.PageSize}}" class="more-link">Next</a>
+    <a href="{{.NextLink}}" class="more-link">Next</a>
     {{end}}
   </div>
   {{end}}

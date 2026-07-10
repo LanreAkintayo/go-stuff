@@ -2,6 +2,7 @@ package main
 
 // import "fmt"
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -30,11 +31,12 @@ func (app *application) readIntWithDefault(r *http.Request, key string, def int)
 }
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
+
 	filter := Filter{
-		Page:     app.readIntWithDefault(r, "page", 1),
-		PageSize: app.readIntWithDefault(r, "page_size", 10),
-		Query:    r.URL.Query().Get("query"),
+		Query:    r.URL.Query().Get("q"),
 		OrderBy:  r.URL.Query().Get("order_by"),
+		Page:     app.readIntWithDefault(r, "page", 1),
+		PageSize: app.readIntWithDefault(r, "page_size", 50),
 	}
 
 	posts, metadata, err := app.postRepo.GetAll(filter)
@@ -43,14 +45,17 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := templateData{
+	app.infoLog.Printf("\nMetadata: %+v\n", metadata)
+
+	app.render(w, r, "index.html", &templateData{
 		Posts:    posts,
 		Metadata: metadata,
-	}
-
-	app.render(w, r, "index.html", &data)
+		NextLink: fmt.Sprintf("/?q=%s&order_by=%s&page=%d&page_size=%d",
+			filter.Query, filter.OrderBy, metadata.NextPage, filter.PageSize),
+		PrevLink: fmt.Sprintf("/?q=%s&order_by=%s&page=%d&page_size=%d",
+			filter.Query, filter.OrderBy, metadata.PrevPage, filter.PageSize),
+	})
 }
-
 func (app *application) login(w http.ResponseWriter, r *http.Request) {
 	if app.isAuthenticated(r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -254,4 +259,70 @@ func (app *application) vote(w http.ResponseWriter, r *http.Request) {
 	app.session.Put(r, "flash", fmt.Sprintf("Vote added successfully for post %d", postId))
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (app *application) comments(w http.ResponseWriter, r *http.Request) {
+	postId := app.readIntWithDefault(r, "post_id", 0)
+
+	post, err := app.postRepo.GetByID(postId)
+	if err != nil {
+		app.infoLog.Printf("No post found for %d", postId)
+		app.session.Put(r, "flash", fmt.Sprintf("No post found for %d", postId))
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return
+		}
+
+		form := NewForm(r.PostForm)
+		form.Required("comment").
+			MinLength("comment", 1).
+			MaxLength("comment", 1000)
+
+		if !form.Valid() {
+			comments, _ := app.postRepo.GetComments(postId)
+			form.Errors.Add("generic", "The data you submitted is not valid")
+			app.errorLog.Printf("Invalid form: %+v", form.Errors)
+			app.render(w, r, "comments.html", &templateData{Form: form, Post: post, Comments: comments})
+			return
+		}
+
+		comment := r.FormValue("comment")
+		user := app.getUserFromContext(r.Context())
+
+		_, err = app.postRepo.AddComment(user.ID, postId, comment)
+		if err != nil {
+			app.errorLog.Printf("Error creating comment: %v", err.Error())
+			form.Errors.Add("generic", "Failed to create comment")
+			app.render(w, r, "comments.html", &templateData{Form: form, Post: post})
+			return
+		}
+
+		app.infoLog.Printf("Comment added successfully for %d", postId)
+
+		app.session.Put(r, "flash", fmt.Sprintf("Comment added successfully for post %d", postId))
+
+		http.Redirect(w, r, fmt.Sprintf("/comments?post_id=%d", postId), http.StatusSeeOther)
+
+		return
+	}
+
+	comments, err := app.postRepo.GetComments(postId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			app.infoLog.Printf("No comments found for post %d", postId)
+			app.session.Put(r, "flash", fmt.Sprintf("No comments found for post %d", postId))
+		} else {
+			app.errorLog.Printf("Error getting comments: %v", err.Error())
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+	}
+
+	app.render(w, r, "comments.html", &templateData{Comments: comments, Post: post})
+
 }

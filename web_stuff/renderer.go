@@ -22,6 +22,10 @@ type templateData struct {
 	Metadata        Metadata
 	IsAuthenticated bool
 	Flash           string
+	Comments        []Comment
+	Post            *Post
+	NextLink        string
+	PrevLink        string
 }
 
 func NewTemplateRenderer(templateDir string, isDev bool) *TemplateRenderer {
