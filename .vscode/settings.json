@@ -1,0 +1,26 @@
+{
+    "[go]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
+        },
+        "editor.suggest.snippetsPreventQuickSuggestions": false
+    },
+    "gopls": {
+        "ui.inlayhint.hints": {
+            "parameterNames": true,
+            "assignVariableTypes": true,
+            "compositeLiteralFields": true,
+            "compositeLiteralTypes": true,
+            "constantValues": true,
+            "functionTypeParameters": true
+        },
+        "formatting.gofmtConfig": {
+            "local": ""
+        }
+    },
+    "go.useLanguageServer": true,
+    "go.lintTool": "staticcheck",
+    "go.formatTool": "goimports",
+    "editor.parameterHints.enabled": true
+}
