@@ -6,21 +6,33 @@
         },
         "editor.suggest.snippetsPreventQuickSuggestions": false
     },
+    "editor.codeLens": true,
+    "go.lintOnSave": "off",
+    "go.useLanguageServer": true,
+    "go.formatTool": "goimports",
+    "editor.parameterHints.enabled": true,
+    "go.inlayHints.parameterNames": true,
+    "go.inlayHints.compositeLiteralFields": true,
+    "go.inlayHints.constantValues": true,
+    "go.inlayHints.functionTypeParameters": true,
+    "go.inlayHints.rangeVariableTypes": true,
     "gopls": {
+        "ui.codelenses": {
+            "gc_details": true,
+            "generate": true,
+            "test": true,
+            "tidy": true,
+            "upgrade_dependency": true,
+            "vendor": true
+        },
         "ui.inlayhint.hints": {
             "parameterNames": true,
             "assignVariableTypes": true,
             "compositeLiteralFields": true,
             "compositeLiteralTypes": true,
             "constantValues": true,
-            "functionTypeParameters": true
-        },
-        "formatting.gofmtConfig": {
-            "local": ""
+            "functionTypeParameters": true,
+            "rangeVariableTypes": true
         }
-    },
-    "go.useLanguageServer": true,
-    "go.lintTool": "staticcheck",
-    "go.formatTool": "goimports",
-    "editor.parameterHints.enabled": true
+    }
 }
